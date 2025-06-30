@@ -3,6 +3,7 @@ Automatically formats specific URLs pasted into [Obsidian](https://obsidian.md/)
 
 ## Overview
 The URL Formatter plugin for Obsidian helps you keep your notes clean and organized by automatically transforming long, messy URLs into concise, readable Markdown links when you paste them into your editor.
+
 I created it because I was constantly pasting long jira-url's in my daily notes and manually re-formatting them to only show the ticket-id. This plugin automates this process.
 
 Instead of pasting a full URL like https://your-company.atlassian.net/browse/PROJ-12345, this plugin can automatically convert it to [PROJ-12345](https://your-company.atlassian.net/browse/PROJ-12345) or even [Jira: PROJ-12345](https://your-company.atlassian.net/browse/PROJ-12345).
@@ -43,5 +44,6 @@ Here are some practical examples of how to set up patterns and what the output w
 
 ## Support
 If you find this plugin useful and would like to support its development, consider buying me a coffee!
+
 https://www.buymeacoffee.com/snoeckie
 
