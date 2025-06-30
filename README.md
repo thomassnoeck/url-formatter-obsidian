@@ -15,32 +15,32 @@ This can be useful for everyone who often pastes (long/messy) url's, that contai
 Here are some practical examples of how to set up patterns and what the output would look like:
 
 ### 1. Generic Jira Ticket Formatting
-- Pattern Name: My Jira Tickets
-- Regular Expression: https:\\/\\/yourcompany\\.atlassian\\.net\\/browse\\/([A-Z0-9-]+)
-- Output Format String: Jira: $1
-- Pasting: https://yourcompany.atlassian.net/browse/PROJ-4567
-- Result: [Jira: PROJ-4567](https://yourcompany.atlassian.net/browse/PROJ-4567)
+- **Pattern Name:** My Jira Tickets
+- **Regular Expression:** https:\\/\\/yourcompany\\.atlassian\\.net\\/browse\\/([A-Z0-9-]+)
+- **Output Format String:** Jira: $1
+- **Pasting:** https://yourcompany.atlassian.net/browse/PROJ-4567
+- **Result:** [Jira: PROJ-4567](https://yourcompany.atlassian.net/browse/PROJ-4567)
 
 ### 2. Blog Post with Year and Slug
-- Pattern Name: My Blog Posts
-- Regular Expression: https:\\/\\/www\\.example\\.com\\/blog\\/(\\d{4})\\/([a-zA-Z0-9_-]+)
-- Output Format String: Blog ($1): $2
-- Pasting: https://www.example.com/blog/2023/my-awesome-article
-- Result: [Blog (2023): my-awesome-article](https://www.example.com/blog/2023/my-awesome-article)
+- **Pattern Name:** My Blog Posts
+- **Regular Expression:** https:\\/\\/www\\.example\\.com\\/blog\\/(\\d{4})\\/([a-zA-Z0-9_-]+)
+- **Output Format String:** Blog ($1): $2
+- **Pasting:** https://www.example.com/blog/2023/my-awesome-article
+- **Result:** [Blog (2023): my-awesome-article](https://www.example.com/blog/2023/my-awesome-article)
 
 ### 3. GitHub Issue/PR Link
-- Pattern Name: GitHub Issues
-- Regular Expression: https:\\/\\/github\\.com\\/([a-zA-Z0-9_-]+)\\/([a-zA-Z0-9_-]+)\\/(?:issues|pull)\\/(\\d+)
-- Output Format String: GH $1/$2 #$3
-- Pasting: https://github.com/obsidian-community/obsidian-url-formatter/issues/123
-- Result: [GH obsidian-community/obsidian-url-formatter #123](https://github.com/obsidian-community/obsidian-url-formatter/issues/123)
+- **Pattern Name:** GitHub Issues
+- **Regular Expression:** https:\\/\\/github\\.com\\/([a-zA-Z0-9_-]+)\\/([a-zA-Z0-9_-]+)\\/(?:issues|pull)\\/(\\d+)
+- **Output Format String:** GH $1/$2 #$3
+- **Pasting:** https://github.com/thomassnoeck/obsidian-url-formatter/issues/123
+- **Result:** [GH obsidian-community/obsidian-url-formatter #123](https://github.com/thomassnoeck/obsidian-url-formatter/issues/123)
 
 ### 4. Simple Domain-Based Link
-- Pattern Name: Specific Docs Page
-- Regular Expression: https:\\/\\/docs\\.mycompany\\.com\\/pages\\/([a-z0-9-]+)
-- Output Format String: Docs: $1
-- Pasting: https://docs.mycompany.com/pages/getting-started
-- Result: [Docs: getting-started](https://docs.mycompany.com/pages/getting-started)
+- **Pattern Name:** Specific Docs Page
+- **Regular Expression:** https:\\/\\/docs\\.mycompany\\.com\\/pages\\/([a-z0-9-]+)
+- **Output Format String:** Docs: $1
+- **Pasting:** https://docs.mycompany.com/pages/getting-started
+- **Result:** [Docs: getting-started](https://docs.mycompany.com/pages/getting-started)
 
 ## Support
 If you find this plugin useful and would like to support its development, consider buying me a coffee!
