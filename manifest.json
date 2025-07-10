@@ -3,8 +3,8 @@
   "name": "URL Formatter",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "Automatically formats specific URLs pasted into Obsidian into clean Markdown links.",
+  "description": "Automatically formats specific URLs pasted into your notes into clean Markdown links.",
   "author": "Thomas Snoeck",
   "authorUrl": "https://www.thomassnoeck.com",
-  "is-desktop-only": false
+  "isDesktopOnly": false
 }
