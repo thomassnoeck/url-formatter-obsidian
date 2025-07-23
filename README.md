@@ -6,7 +6,7 @@ The URL Formatter plugin for Obsidian helps you keep your notes clean and organi
 
 I created it because I was constantly pasting long jira-url's in my daily notes and manually re-formatting them to only show the ticket-id. This plugin automates this process.
 
-Instead of pasting a full URL like https://your-company.atlassian.net/browse/PROJ-12345, this plugin can automatically convert it to [PROJ-12345](https://your-company.atlassian.net/browse/PROJ-12345) or even [Jira: PROJ-12345](https://your-company.atlassian.net/browse/PROJ-12345).
+Instead of pasting a full URL like https://your-company.atlassian.net/browse/PROJ-12345, this plugin can automatically convert it to [PROJ-12345](https://your-company.atlassian.net/browse/PROJ-12345) or even [Jira: PROJ-12345 (your-company)](https://your-company.atlassian.net/browse/PROJ-12345).
 
 This can be useful for everyone who often pastes (long/messy) url's, that contain a meaningful part, in their vault, making it cleaner.
 
@@ -28,14 +28,7 @@ Here are some practical examples of how to set up patterns and what the output w
 - **Pasting:** https://www.example.com/blog/2023/my-awesome-article
 - **Result:** [Blog (2023): my-awesome-article](https://www.example.com/blog/2023/my-awesome-article)
 
-### 3. GitHub Issue/PR Link
-- **Pattern Name:** GitHub Issues
-- **Regular Expression:** https:\\/\\/github\\.com\\/([a-zA-Z0-9_-]+)\\/([a-zA-Z0-9_-]+)\\/(?:issues|pull)\\/(\\d+)
-- **Output Format String:** GH $1/$2 #$3
-- **Pasting:** https://github.com/thomassnoeck/obsidian-url-formatter/issues/123
-- **Result:** [GH obsidian-community/obsidian-url-formatter #123](https://github.com/thomassnoeck/obsidian-url-formatter/issues/123)
-
-### 4. Simple Domain-Based Link
+### 3. Simple Domain-Based Link
 - **Pattern Name:** Specific Docs Page
 - **Regular Expression:** https:\\/\\/docs\\.mycompany\\.com\\/pages\\/([a-z0-9-]+)
 - **Output Format String:** Docs: $1
