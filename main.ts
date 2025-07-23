@@ -5,22 +5,22 @@ import { Extension } from '@codemirror/state';
 
 interface UrlPattern {
     name: string;
-    pattern: string; 
-    formatString: string; 
+    pattern: string;
+    formatString: string;
 }
 
 interface UrlFormatterSettings {
-    enabled: boolean; 
+    enabled: boolean;
     urlPatterns: UrlPattern[];
 }
 
 const DEFAULT_SETTINGS: UrlFormatterSettings = {
-    enabled: true, 
+    enabled: true,
     urlPatterns: [
         {
-            name: 'example.com',
-            pattern: 'https:\\/\\/www\\.example\\.com\\/path\\/([A-Z0-9-]+)\\/detail',
-            formatString: 'ID: $1', // Example output: ID: ABC-123 (if URL is https://www.example.com/path/ABC-123/detail)
+            name: 'Tickets per company',
+            pattern: 'https:\\/\\/([A-Za-z0-9-]+)\\.example\\.com\\/([A-Z0-9-]+)',
+            formatString: '$2 ($1)', // Example output: ABC-123 (company) (if URL is company.example.com/ABC-123)
         },
     ]
 };
@@ -34,20 +34,25 @@ export default class UrlFormatterPlugin extends Plugin {
         await this.loadSettings();
         this.addSettingTab(new UrlFormatterSettingTab(this.app, this));
         this.registerEditorExtension(this.createPasteHandler());
+        // Load the stylesheet
+        this.app.workspace.onLayoutReady(() => {
+            this.app.workspace.containerEl.addClass('url-formatter-plugin-ready');
+        });
     }
 
     onunload() {
         console.log('URL Formatter Plugin unloaded.');
+        this.app.workspace.containerEl.removeClass('url-formatter-plugin-ready');
     }
 
     createPasteHandler(): Extension {
-        const plugin = this; 
+        const plugin = this;
 
         return EditorView.domEventHandlers({
             paste: (event: ClipboardEvent, view: EditorView) => {
 
                 if (!plugin.settings.enabled) {
-                    return false; 
+                    return false;
                 }
 
                 const pastedText = event.clipboardData?.getData('text');
@@ -57,7 +62,7 @@ export default class UrlFormatterPlugin extends Plugin {
                     const formattedText = plugin.formatUrl(pastedText);
 
                     if (formattedText) {
-                        event.preventDefault(); 
+                        event.preventDefault();
 
                         const { from, to } = view.state.selection.main;
                         const newCursorPos = from + formattedText.length; // Calculate new cursor position at the end of inserted text
@@ -87,10 +92,12 @@ export default class UrlFormatterPlugin extends Plugin {
         this.settings.urlPatterns = this.settings.urlPatterns.map(pattern => {
 
             if (!pattern.hasOwnProperty('formatString') && pattern.hasOwnProperty('captureGroupIndex')) {
-                const oldPattern = pattern as any; 
-                let newFormatString = `$${oldPattern.captureGroupIndex || 0}`; 
-                if (oldPattern.preposition) newFormatString = oldPattern.preposition + newFormatString;
-                if (oldPattern.postposition) newFormatString = newFormatString + oldPattern.postposition;
+                const oldPattern = pattern as any;
+                let newFormatString = `$${oldPattern.captureGroupIndex || 0}`;
+                if (oldPattern.preposition) 
+                    newFormatString = oldPattern.preposition + newFormatString;
+                if (oldPattern.postposition) 
+                    newFormatString = newFormatString + oldPattern.postposition;
 
                 return {
                     name: oldPattern.name,
@@ -98,7 +105,7 @@ export default class UrlFormatterPlugin extends Plugin {
                     formatString: newFormatString
                 };
             }
-            return pattern; 
+            return pattern;
         });
     }
 
@@ -156,7 +163,7 @@ class UrlFormatterSettingTab extends PluginSettingTab {
 
     display(): void {
         const { containerEl } = this;
-        containerEl.empty(); 
+        containerEl.empty();
 
         containerEl.createEl('h2', { text: 'URL Formatter Settings' });
 
@@ -180,13 +187,12 @@ class UrlFormatterSettingTab extends PluginSettingTab {
 
         // Render each existing URL pattern
         this.plugin.settings.urlPatterns.forEach((patternConfig, index) => {
-            const patternContainer = containerEl.createDiv('url-formatter-pattern-item'); // Create a container for each pattern's settings
-            patternContainer.createEl('h4', { text: `Pattern ${index + 1}` }); // Title for the pattern
+            const patternContainer = containerEl.createDiv('url-formatter-pattern-item'); 
+            patternContainer.createEl('h4', { text: `Pattern ${index + 1}` }); 
 
-            // Pattern Name
             new Setting(patternContainer)
                 .setName('Pattern Name')
-                .setDesc('Give your pattern a name so you can easily identify its purpose. (e.g., "example.com", "Jira Ticket", ... ).')
+                .setDesc('Give the pattern a name so you can identify its purpose. (e.g., "Blog X", "Jira Ticket", ... )')
                 .addText(text => text
                     .setPlaceholder('e.g., "example.com"')
                     .setValue(patternConfig.name)
@@ -195,35 +201,32 @@ class UrlFormatterSettingTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     }));
 
-            // Regular Expression 
             new Setting(patternContainer)
                 .setName('Regular Expression')
-                .setDesc('The regex to match the URL. **Use `\\/` to escape literal forward slashes `/` and `\\.` to escape literal dots `.`.**')
-            const regexTextInput = new TextComponent(patternContainer) // Create standalone TextComponent for full width
-                .setPlaceholder('e.g., "https:\\/\\/www\\.example\\.com\\/path\\/([A-Z0-9-]+)\\/detail"')
+                .setDesc('The regex to match the URL. **Use `\\/` to escape literal forward slashes `/` and `\\.` to escape literal dots `.`')
+            const regexTextInput = new TextComponent(patternContainer) 
+                .setPlaceholder('e.g., "https:\/\/([A-Za-z0-9-]+)\\.example\\.com\\/([A-Z0-9-]+)"')
                 .setValue(patternConfig.pattern)
                 .onChange(async (value) => {
                     patternConfig.pattern = value;
                     await this.plugin.saveSettings();
                 });
-            regexTextInput.inputEl.style.width = '100%'; 
-            regexTextInput.inputEl.style.marginBottom = '10px'; 
+            regexTextInput.inputEl.addClass('url-formatter-full-width-input');
+            regexTextInput.inputEl.addClass('url-formatter-margin-bottom');
 
-            // Output Format String (New Field - replaces preposition, postposition, capture group index)
             new Setting(patternContainer)
                 .setName('Output Format String')
                 .setDesc('Use $0 for the full URL match, $1, $2, etc., for regex capture groups. e.g., "Blog: $1 - $2!"')
             const formatStringInput = new TextComponent(patternContainer)
-                .setPlaceholder('e.g., "Blog: $1 - $2"')
+                .setPlaceholder('e.g., "$2 ($1)"')
                 .setValue(patternConfig.formatString)
                 .onChange(async (value) => {
                     patternConfig.formatString = value;
                     await this.plugin.saveSettings();
                 });
-            formatStringInput.inputEl.style.width = '100%'; 
-            formatStringInput.inputEl.style.marginBottom = '10px'; 
+            formatStringInput.inputEl.addClass('url-formatter-full-width-input');
+            formatStringInput.inputEl.addClass('url-formatter-margin-bottom');
 
-            // Remove Button
             new Setting(patternContainer)
                 .addButton(button => button
                     .setButtonText('Remove Pattern')
@@ -232,13 +235,11 @@ class UrlFormatterSettingTab extends PluginSettingTab {
                     .onClick(async () => {
                         this.plugin.settings.urlPatterns.splice(index, 1);
                         await this.plugin.saveSettings();
-                        this.display(); // Re-render to reflect removal
+                        this.display(); 
                     }));
 
-            containerEl.createEl('hr'); // Separator between patterns
         });
 
-        // Button to add a new URL pattern
         new Setting(containerEl)
             .addButton(button => button
                 .setButtonText('Add New Pattern')
@@ -246,32 +247,24 @@ class UrlFormatterSettingTab extends PluginSettingTab {
                 .onClick(async () => {
                     this.plugin.settings.urlPatterns.push({ name: '', pattern: '', formatString: '' });
                     await this.plugin.saveSettings();
-                    this.display(); // Re-render the settings page with the new empty pattern
+                    this.display(); 
                 }));
 
         // =========================================================
-        // Buy Me A Coffee Button 
+        // Buy Me A Coffee Button
         // =========================================================
-        const bmcButtonContainer = containerEl.createDiv();
-        bmcButtonContainer.style.display = 'flex';
-        bmcButtonContainer.style.justifyContent = 'center';
-        bmcButtonContainer.style.marginTop = '20px'; 
+        const bmcButtonContainer = containerEl.createDiv('url-formatter-bmc-container');
 
-        new Setting(bmcButtonContainer) 
+        new Setting(bmcButtonContainer)
             .addButton(button => {
                 button.setButtonText('Buy me a coffee ☕')
-                    .setClass('mod-cta') 
+                    .setClass('mod-cta')
                     .onClick(() => {
                         window.open('https://www.buymeacoffee.com/snoeckie', '_blank');
                     });
 
                 const bmcBtnEl = button.buttonEl;
-                bmcBtnEl.style.backgroundColor = '#FFDD00'; // BMC Yellow
-                bmcBtnEl.style.color = '#000000'; 
-                bmcBtnEl.style.borderRadius = '5px';
-                bmcBtnEl.style.padding = '8px 16px';
-                bmcBtnEl.style.fontWeight = 'bold';
-                bmcBtnEl.style.fontFamily = 'Cookie, "Inter", sans-serif'; // Added Inter as fallback
+                bmcBtnEl.addClass('url-formatter-bmc-button');
             });
     }
 }

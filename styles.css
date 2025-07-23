@@ -1,0 +1,37 @@
+/* styles.css */
+
+/* Styling for the individual URL pattern containers in settings */
+.url-formatter-pattern-item {
+    border: 1px solid var(--background-modifier-border);
+    border-radius: var(--radius-m);
+    padding: var(--size-4-3);
+    margin-bottom: var(--size-4-4);
+    background-color: var(--background-secondary);
+}
+
+/* Full width for text inputs within settings */
+.url-formatter-full-width-input {
+    width: 100%;
+}
+
+/* Margin bottom for text inputs */
+.url-formatter-margin-bottom {
+    margin-bottom: 10px; /* Adjust as needed */
+}
+
+/* Buy Me A Coffee button container styling */
+.url-formatter-bmc-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Adjust as needed */
+}
+
+/* Buy Me A Coffee button specific styling */
+.url-formatter-bmc-button {
+    background-color: #FFDD00; /* BMC Yellow */
+    color: #000000;
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-weight: bold;
+    font-family: 'Cookie', "Inter", sans-serif; /* Added Inter as fallback */
+}
