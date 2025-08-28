@@ -34,10 +34,6 @@ export default class UrlFormatterPlugin extends Plugin {
         await this.loadSettings();
         this.addSettingTab(new UrlFormatterSettingTab(this.app, this));
         this.registerEditorExtension(this.createPasteHandler());
-        // Load the stylesheet
-        this.app.workspace.onLayoutReady(() => {
-            this.app.workspace.containerEl.addClass('url-formatter-plugin-ready');
-        });
     }
 
     onunload() {
@@ -165,12 +161,10 @@ class UrlFormatterSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'URL Formatter Settings' });
-
         // Global Enable/Disable Toggle
         new Setting(containerEl)
-            .setName('Enable URL Formatting')
-            .setDesc('Toggle to enable or disable automatic URL formatting on paste.')
+            .setName('Enable url formatting')
+            .setDesc('Toggle to enable or disable automatic url formatting on paste.')
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.enabled)
                 .onChange(async (value) => {
@@ -178,20 +172,20 @@ class UrlFormatterSettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
-        containerEl.createEl('h3', { text: 'Custom URL Patterns' });
-        containerEl.createEl('p', { text: 'Define custom URL patterns to automatically format pasted links into clean Markdown.\nEach pattern requires:' });
+        new Setting(containerEl).setName("Custom url patterns").setHeading();
+        containerEl.createEl('p', { text: 'Define custom url patterns to automatically format pasted links into clean Markdown.\nEach pattern requires:' });
         containerEl.createEl('ul')
-            .createEl('li', { text: 'A friendly Name for identification.' })
-            .createEl('li', { text: 'A Regular Expression (Regex) that matches the full URL.' })
-            .createEl('li', { text: 'An Output Format String using `$0` for the full match, and `$1`, `$2`, etc., for capture groups. Remember to escape special characters (like . / ?).' });
+            .createEl('li', { text: 'A friendly name for identification.' })
+            .createEl('li', { text: 'A regular expression (regex) that matches the full url.' })
+            .createEl('li', { text: 'An output format string using `$0` for the full match, and `$1`, `$2`, etc., for capture groups. Remember to escape special characters (like . / ?).' });
 
         // Render each existing URL pattern
         this.plugin.settings.urlPatterns.forEach((patternConfig, index) => {
             const patternContainer = containerEl.createDiv('url-formatter-pattern-item'); 
-            patternContainer.createEl('h4', { text: `Pattern ${index + 1}` }); 
+            new Setting(patternContainer).setName(`Pattern ${index + 1}`).setHeading();
 
             new Setting(patternContainer)
-                .setName('Pattern Name')
+                .setName('Pattern name')
                 .setDesc('Give the pattern a name so you can identify its purpose. (e.g., "Blog X", "Jira Ticket", ... )')
                 .addText(text => text
                     .setPlaceholder('e.g., "example.com"')
@@ -202,8 +196,8 @@ class UrlFormatterSettingTab extends PluginSettingTab {
                     }));
 
             new Setting(patternContainer)
-                .setName('Regular Expression')
-                .setDesc('The regex to match the URL. **Use `\\/` to escape literal forward slashes `/` and `\\.` to escape literal dots `.`')
+                .setName('Regular expression')
+                .setDesc('The regex to match the url. **Use `\\/` to escape literal forward slashes `/` and `\\.` to escape literal dots `.`')
             const regexTextInput = new TextComponent(patternContainer) 
                 .setPlaceholder('e.g., "https:\/\/([A-Za-z0-9-]+)\\.example\\.com\\/([A-Z0-9-]+)"')
                 .setValue(patternConfig.pattern)
@@ -215,8 +209,8 @@ class UrlFormatterSettingTab extends PluginSettingTab {
             regexTextInput.inputEl.addClass('url-formatter-margin-bottom');
 
             new Setting(patternContainer)
-                .setName('Output Format String')
-                .setDesc('Use $0 for the full URL match, $1, $2, etc., for regex capture groups. e.g., "Blog: $1 - $2!"')
+                .setName('Output format string')
+                .setDesc('Use $0 for the full url match, $1, $2, etc., for regex capture groups. e.g., "Blog: $1 - $2!"')
             const formatStringInput = new TextComponent(patternContainer)
                 .setPlaceholder('e.g., "$2 ($1)"')
                 .setValue(patternConfig.formatString)
@@ -229,7 +223,7 @@ class UrlFormatterSettingTab extends PluginSettingTab {
 
             new Setting(patternContainer)
                 .addButton(button => button
-                    .setButtonText('Remove Pattern')
+                    .setButtonText('Remove pattern')
                     .setIcon('trash')
                     .setClass('mod-warning')
                     .onClick(async () => {
@@ -242,7 +236,7 @@ class UrlFormatterSettingTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .addButton(button => button
-                .setButtonText('Add New Pattern')
+                .setButtonText('Add new pattern')
                 .setCta()
                 .onClick(async () => {
                     this.plugin.settings.urlPatterns.push({ name: '', pattern: '', formatString: '' });
