@@ -38,7 +38,6 @@ export default class UrlFormatterPlugin extends Plugin {
 
     onunload() {
         console.log('URL Formatter Plugin unloaded.');
-        this.app.workspace.containerEl.removeClass('url-formatter-plugin-ready');
     }
 
     createPasteHandler(): Extension {
