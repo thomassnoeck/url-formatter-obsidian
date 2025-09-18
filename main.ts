@@ -7,20 +7,20 @@ interface UrlPattern {
     name: string;
     pattern: string;
     formatString: string;
+    patternEnabled: boolean;
 }
 
 interface UrlFormatterSettings {
-    enabled: boolean;
     urlPatterns: UrlPattern[];
 }
 
 const DEFAULT_SETTINGS: UrlFormatterSettings = {
-    enabled: true,
     urlPatterns: [
         {
             name: 'Tickets per company',
             pattern: 'https:\\/\\/([A-Za-z0-9-]+)\\.example\\.com\\/([A-Z0-9-]+)',
-            formatString: '$2 ($1)', // Example output: ABC-123 (company) (if URL is company.example.com/ABC-123)
+            formatString: '$2 ($1)', // Example output: ABC-123 (company) (if URL is company.example.com/ABC-123),
+            patternEnabled: true,
         },
     ]
 };
@@ -45,10 +45,6 @@ export default class UrlFormatterPlugin extends Plugin {
 
         return EditorView.domEventHandlers({
             paste: (event: ClipboardEvent, view: EditorView) => {
-
-                if (!plugin.settings.enabled) {
-                    return false;
-                }
 
                 const pastedText = event.clipboardData?.getData('text');
 
@@ -80,28 +76,15 @@ export default class UrlFormatterPlugin extends Plugin {
         });
     }
 
-    // Loads settings from Obsidian's data storage.
     async loadSettings() {
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        const loadedData = await this.loadData();
 
-        this.settings.urlPatterns = this.settings.urlPatterns.map(pattern => {
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, loadedData);
 
-            if (!pattern.hasOwnProperty('formatString') && pattern.hasOwnProperty('captureGroupIndex')) {
-                const oldPattern = pattern as any;
-                let newFormatString = `$${oldPattern.captureGroupIndex || 0}`;
-                if (oldPattern.preposition) 
-                    newFormatString = oldPattern.preposition + newFormatString;
-                if (oldPattern.postposition) 
-                    newFormatString = newFormatString + oldPattern.postposition;
-
-                return {
-                    name: oldPattern.name,
-                    pattern: oldPattern.pattern,
-                    formatString: newFormatString
-                };
-            }
-            return pattern;
-        });
+        this.settings.urlPatterns = this.settings.urlPatterns.map(pattern => ({
+            ...pattern,
+            patternEnabled: pattern.patternEnabled ?? true
+        }));
     }
 
     // Saves current settings to Obsidian's data storage.
@@ -121,6 +104,9 @@ export default class UrlFormatterPlugin extends Plugin {
     formatUrl(url: string): string | null {
         // Iterate through each user-defined pattern
         for (const patternConfig of this.settings.urlPatterns) {
+
+            if (patternConfig.patternEnabled === false) continue;
+
             try {
                 const regex = new RegExp(patternConfig.pattern);
                 const match = url.match(regex);
@@ -160,28 +146,27 @@ class UrlFormatterSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        // Global Enable/Disable Toggle
-        new Setting(containerEl)
-            .setName('Enable url formatting')
-            .setDesc('Toggle to enable or disable automatic url formatting on paste.')
-            .addToggle(toggle => toggle
-                .setValue(this.plugin.settings.enabled)
-                .onChange(async (value) => {
-                    this.plugin.settings.enabled = value;
-                    await this.plugin.saveSettings();
-                }));
-
         new Setting(containerEl).setName("Custom url patterns").setHeading();
-        containerEl.createEl('p', { text: 'Define custom url patterns to automatically format pasted links into clean Markdown.\nEach pattern requires:' });
-        containerEl.createEl('ul')
-            .createEl('li', { text: 'A friendly name for identification.' })
-            .createEl('li', { text: 'A regular expression (regex) that matches the full url.' })
-            .createEl('li', { text: 'An output format string using `$0` for the full match, and `$1`, `$2`, etc., for capture groups. Remember to escape special characters (like . / ?).' });
+        containerEl.createEl('p').innerHTML = 'Define custom url patterns to automatically format pasted links into clean Markdown.<br>Each pattern requires:';
+
+        const ul = containerEl.createEl('ul');
+            ul.createEl('li', { text: 'A friendly name for identification.' })
+            ul.createEl('li', { text: 'A regular expression (regex) that matches the full url.' });
+            const liWithCode = ul.createEl('li');
+            liWithCode.innerHTML = 'An output format string using <code>$0</code> for the full match, and <code>$1</code>, <code>$2</code>, etc., for capture groups. Remember to escape special characters (like . / ?).';
+            ul.createEl('li', { text: 'You can easily toggle each pattern on or off.' });
 
         // Render each existing URL pattern
         this.plugin.settings.urlPatterns.forEach((patternConfig, index) => {
             const patternContainer = containerEl.createDiv('url-formatter-pattern-item'); 
-            new Setting(patternContainer).setName(`Pattern ${index + 1}`).setHeading();
+            new Setting(patternContainer)
+                .setName(`Pattern ${index + 1}`).setHeading()
+                .addToggle(toggle => toggle
+                    .setValue(patternConfig.patternEnabled)
+                    .onChange(async (value) => {
+                        patternConfig.patternEnabled = value;
+                        await this.plugin.saveSettings();
+                    }));
 
             new Setting(patternContainer)
                 .setName('Pattern name')
@@ -238,7 +223,7 @@ class UrlFormatterSettingTab extends PluginSettingTab {
                 .setButtonText('Add new pattern')
                 .setCta()
                 .onClick(async () => {
-                    this.plugin.settings.urlPatterns.push({ name: '', pattern: '', formatString: '' });
+                    this.plugin.settings.urlPatterns.push({ name: '', pattern: '', formatString: '' , patternEnabled: true});
                     await this.plugin.saveSettings();
                     this.display(); 
                 }));

@@ -1,0 +1,5 @@
+node_modules/
+main.d.ts
+main.js
+package-lock.json
+data.json

@@ -17,9 +17,9 @@ Here are some practical examples of how to set up patterns and what the output w
 ### 1. Generic Jira Ticket Formatting
 - **Pattern Name:** My Jira Tickets
 - **Regular Expression:** https:\\/\\/yourcompany\\.atlassian\\.net\\/browse\\/([A-Z0-9-]+)
-- **Output Format String:** Jira: $1
+- **Output Format String:** $1
 - **Pasting:** https://yourcompany.atlassian.net/browse/PROJ-4567
-- **Result:** [Jira: PROJ-4567](https://yourcompany.atlassian.net/browse/PROJ-4567)
+- **Result:** [PROJ-4567](https://yourcompany.atlassian.net/browse/PROJ-4567)
 
 ### 2. Blog Post with Year and Slug
 - **Pattern Name:** My Blog Posts
