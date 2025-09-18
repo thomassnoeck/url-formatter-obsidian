@@ -1,6 +1,6 @@
 {
   "name": "url-formatter",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An Obsidian plugin to format pasted URLs into clean Markdown links.",
   "main": "main.js",
   "type": "module",

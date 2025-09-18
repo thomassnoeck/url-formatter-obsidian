@@ -1,7 +1,7 @@
 {
   "id": "url-formatter",
   "name": "URL Formatter",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "minAppVersion": "0.15.0",
   "description": "Automatically formats specific URLs pasted into your notes into clean Markdown links.",
   "author": "Thomas Snoeck",
