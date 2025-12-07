@@ -11,12 +11,16 @@
   "keywords": [],
   "author": "Thomas Snoeck",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thomassnoeck/url-formatter-obsidian"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/node": "^20.14.9",
-    "obsidian": "latest",
+    "obsidian": "^1.7.2",
     "rollup": "^4.18.0",
     "tslib": "^2.6.3",
     "typescript": "^5.5.3",

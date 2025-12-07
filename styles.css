@@ -16,7 +16,13 @@
 
 /* Margin bottom for text inputs */
 .url-formatter-margin-bottom {
-    margin-bottom: 10px; /* Adjust as needed */
+    margin-bottom: var(--size-4-2);
+}
+
+/* Invalid regex visual feedback */
+.url-formatter-invalid-regex {
+    border-color: var(--text-error) !important;
+    background-color: var(--background-modifier-error);
 }
 
 /* Buy Me A Coffee button container styling */
