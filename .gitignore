@@ -1,5 +1,5 @@
 node_modules/
-main.d.ts
+*.d.ts
 main.js
 package-lock.json
 data.json
