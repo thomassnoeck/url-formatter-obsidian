@@ -1,42 +1,115 @@
-# url-formatter-obsidian
-Automatically formats specific URLs pasted into [Obsidian](https://obsidian.md/) into clean Markdown links. 
+# 🔗 URL Formatter for Obsidian
 
-## Overview
-The URL Formatter plugin for Obsidian helps you keep your notes clean and organized by automatically transforming long, messy URLs into concise, readable Markdown links when you paste them into your editor.
+> Automatically transforms messy URLs into clean, readable Markdown links when you paste them into [Obsidian](https://obsidian.md/).
 
-I created it because I was constantly pasting long jira-url's in my daily notes and manually re-formatting them to only show the ticket-id. This plugin automates this process.
+---
 
-Instead of pasting a full URL like https://your-company.atlassian.net/browse/PROJ-12345, this plugin can automatically convert it to [PROJ-12345](https://your-company.atlassian.net/browse/PROJ-12345) or even [Jira: PROJ-12345 (your-company)](https://your-company.atlassian.net/browse/PROJ-12345).
+## 📖 Overview
 
-This can be useful for everyone who often pastes (long/messy) url's, that contain a meaningful part, in their vault, making it cleaner.
+**URL Formatter** helps you maintain clean and organized notes by automatically converting long, complex URLs into concise Markdown links based on customizable patterns.
 
-## Examples
+### 💡 The Problem
 
-Here are some practical examples of how to set up patterns and what the output would look like:
+Constantly pasting long URLs like this into your daily notes:
+```
+https://your-company.atlassian.net/browse/PROJ-12345
+```
 
-### 1. Generic Jira Ticket Formatting
-- **Pattern Name:** My Jira Tickets
-- **Regular Expression:** https:\\/\\/yourcompany\\.atlassian\\.net\\/browse\\/([A-Z0-9-]+)
-- **Output Format String:** $1
-- **Pasting:** https://yourcompany.atlassian.net/browse/PROJ-4567
-- **Result:** [PROJ-4567](https://yourcompany.atlassian.net/browse/PROJ-4567)
+### ✨ The Solution
 
-### 2. Blog Post with Year and Slug
-- **Pattern Name:** My Blog Posts
-- **Regular Expression:** https:\\/\\/www\\.example\\.com\\/blog\\/(\\d{4})\\/([a-zA-Z0-9_-]+)
-- **Output Format String:** Blog ($1): $2
-- **Pasting:** https://www.example.com/blog/2023/my-awesome-article
-- **Result:** [Blog (2023): my-awesome-article](https://www.example.com/blog/2023/my-awesome-article)
+This plugin automatically formats them into clean links:
+```markdown
+[PROJ-12345](https://your-company.atlassian.net/browse/PROJ-12345)
+```
 
-### 3. Simple Domain-Based Link
-- **Pattern Name:** Specific Docs Page
-- **Regular Expression:** https:\\/\\/docs\\.mycompany\\.com\\/pages\\/([a-z0-9-]+)
-- **Output Format String:** Docs: $1
-- **Pasting:** https://docs.mycompany.com/pages/getting-started
-- **Result:** [Docs: getting-started](https://docs.mycompany.com/pages/getting-started)
+Or even:
+```markdown
+[Jira: PROJ-12345 (your-company)](https://your-company.atlassian.net/browse/PROJ-12345)
+```
 
-## Support
-If you find this plugin useful and would like to support its development, consider buying me a coffee!
+> [!TIP]
+> Perfect for anyone who frequently pastes URLs containing meaningful identifiers (like Jira tickets, blog posts, documentation pages) into their vault!
 
-https://www.buymeacoffee.com/snoeckie
+---
+
+## 🎯 Usage Examples
+
+Here are practical examples showing how to configure patterns and their outputs:
+
+### Example 1: Jira Ticket Formatting
+
+| Setting | Value |
+|---------|-------|
+| **Pattern Name** | My Jira Tickets |
+| **Regular Expression** | `https:\/\/yourcompany\.atlassian\.net\/browse\/([A-Z0-9-]+)` |
+| **Output Format** | `$1` |
+
+**Input:**
+```
+https://yourcompany.atlassian.net/browse/PROJ-4567
+```
+
+**Output:**
+```markdown
+[PROJ-4567](https://yourcompany.atlassian.net/browse/PROJ-4567)
+```
+
+---
+
+### Example 2: Blog Posts with Year & Slug
+
+| Setting | Value |
+|---------|-------|
+| **Pattern Name** | My Blog Posts |
+| **Regular Expression** | `https:\/\/www\.example\.com\/blog\/(\d{4})\/([a-zA-Z0-9_-]+)` |
+| **Output Format** | `Blog ($1): $2` |
+
+**Input:**
+```
+https://www.example.com/blog/2023/my-awesome-article
+```
+
+**Output:**
+```markdown
+[Blog (2023): my-awesome-article](https://www.example.com/blog/2023/my-awesome-article)
+```
+
+---
+
+### Example 3: Documentation Pages
+
+| Setting | Value |
+|---------|-------|
+| **Pattern Name** | Specific Docs Page |
+| **Regular Expression** | `https:\/\/docs\.mycompany\.com\/pages\/([a-z0-9-]+)` |
+| **Output Format** | `Docs: $1` |
+
+**Input:**
+```
+https://docs.mycompany.com/pages/getting-started
+```
+
+**Output:**
+```markdown
+[Docs: getting-started](https://docs.mycompany.com/pages/getting-started)
+```
+
+---
+
+## 🎨 Key Features
+
+- ⚡ **Automatic Formatting**, Works instantly when you paste URLs
+- 🎯 **Pattern-Based**,     Use regex to match specific URL structures
+- 🔧 **Fully Customizable**, Define your own patterns and output formats
+- 💾 **Capture Groups**, Use `$1`, `$2`, etc. to extract URL components
+- 🧹 **Clean Notes**, Keep your vault organized with consistent link formatting
+
+---
+
+## ☕ Support
+
+If you find this plugin useful, consider supporting its development:
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/snoeckie)
+
 
