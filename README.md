@@ -1,8 +1,8 @@
 # 🔗 URL Formatter for Obsidian
 
-> Automatically transforms messy URLs into clean, readable Markdown links when you paste them into [Obsidian](https://obsidian.md/).
+Automatically transforms messy URLs into clean, readable Markdown links when you paste them into [Obsidian](https://obsidian.md/).
 
----
+
 
 ## 📖 Overview
 
@@ -30,7 +30,7 @@ Or even:
 > [!TIP]
 > Perfect for anyone who frequently pastes URLs containing meaningful identifiers (like Jira tickets, blog posts, documentation pages) into their vault!
 
----
+
 
 ## 🎯 Usage Examples
 
@@ -94,17 +94,7 @@ https://docs.mycompany.com/pages/getting-started
 [Docs: getting-started](https://docs.mycompany.com/pages/getting-started)
 ```
 
----
 
-## 🎨 Key Features
-
-- ⚡ **Automatic Formatting**, Works instantly when you paste URLs
-- 🎯 **Pattern-Based**,     Use regex to match specific URL structures
-- 🔧 **Fully Customizable**, Define your own patterns and output formats
-- 💾 **Capture Groups**, Use `$1`, `$2`, etc. to extract URL components
-- 🧹 **Clean Notes**, Keep your vault organized with consistent link formatting
-
----
 
 ## ☕ Support
 
