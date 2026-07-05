@@ -6,7 +6,9 @@
   "private": true,
   "scripts": {
     "dev": "rollup -c --watch",
-    "build": "rollup -c --environment BUILD:production"
+    "build": "rollup -c --environment BUILD:production",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "obsidian",
@@ -30,6 +32,7 @@
     "obsidian": "1.13.1",
     "rollup": "^4.18.0",
     "tslib": "^2.6.3",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^4.1.9"
   }
 }
