@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "sourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
@@ -9,7 +8,7 @@
       "DOM",
       "ESNext"
     ],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noEmitOnError": true,
     "importHelpers": true,
     "isolatedModules": true,

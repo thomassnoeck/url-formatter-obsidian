@@ -10,7 +10,7 @@ import { UrlFormatterSettings, DEFAULT_SETTINGS } from './src/types';
  */
 export default class UrlFormatterPlugin extends Plugin {
     settings!: UrlFormatterSettings;
-    private saveDebounceTimer: NodeJS.Timeout | null = null;
+    private saveDebounceTimer: number | null = null;
 
     async onload() {
         console.log('URL Formatter Plugin loaded. Registering paste handler...');
@@ -89,9 +89,9 @@ export default class UrlFormatterPlugin extends Plugin {
      */
     debouncedSaveSettings(delayMs: number = 500) {
         if (this.saveDebounceTimer) {
-            clearTimeout(this.saveDebounceTimer);
+            window.clearTimeout(this.saveDebounceTimer);
         }
-        this.saveDebounceTimer = setTimeout(() => {
+        this.saveDebounceTimer = window.setTimeout(() => {
             this.saveSettings();
         }, delayMs);
     }
