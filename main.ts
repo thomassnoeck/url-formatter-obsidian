@@ -121,6 +121,8 @@ export default class UrlFormatterPlugin extends Plugin {
 
             if (patternConfig.patternEnabled === false) continue;
 
+            if (!patternConfig.pattern || !patternConfig.formatString) continue;
+
             try {
                 const regex = new RegExp(patternConfig.pattern);
                 const match = url.match(regex);
