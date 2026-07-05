@@ -11,6 +11,10 @@ export class Plugin {
     }
 
     async saveData(_data: unknown): Promise<void> {}
+
+    addSettingTab(_tab: unknown): void {}
+
+    registerEditorExtension(_extension: unknown): void {}
 }
 
 export class PluginSettingTab {

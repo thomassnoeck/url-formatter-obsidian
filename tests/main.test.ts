@@ -142,6 +142,19 @@ describe('loadSettings', () => {
     });
 });
 
+describe('plugin lifecycle', () => {
+    it('onload completes: settings load and the paste handler builds against real CodeMirror', async () => {
+        const consoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
+        const plugin = new UrlFormatterPlugin({} as never, {} as never);
+
+        await plugin.onload();
+
+        expect(plugin.settings.urlPatterns.length).toBeGreaterThan(0);
+        expect(plugin.createPasteHandler()).toBeDefined();
+        consoleLog.mockRestore();
+    });
+});
+
 describe('debounced saving', () => {
     beforeEach(() => {
         // The plugin uses window.setTimeout; vitest's node environment has no window
