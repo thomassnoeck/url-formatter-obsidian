@@ -128,13 +128,9 @@ export default class UrlFormatterPlugin extends Plugin {
                 const match = url.match(regex);
 
                 if (match) {
-                    let formattedDisplayText = patternConfig.formatString;
-
-                    // Replace $0, $1, $2, etc., with actual capture group values
-                    for (let i = 0; i < match.length; i++) {
-                        const placeholder = `$${i}`;
-                        formattedDisplayText = formattedDisplayText.replaceAll(placeholder, match[i] || '');
-                    }
+                    // Replace $0, $1, $2, etc., with actual capture group values in a single pass
+                    const formattedDisplayText = patternConfig.formatString.replace(/\$(\d+)/g,
+                        (token, groupIndex) => Number(groupIndex) < match.length ? (match[Number(groupIndex)] ?? '') : token);
 
                     return `[${formattedDisplayText}](${url})`;
                 }
