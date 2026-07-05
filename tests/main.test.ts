@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import UrlFormatterPlugin from '../main';
 import { DEFAULT_SETTINGS, UrlPattern } from '../src/types';
 
@@ -139,5 +139,64 @@ describe('loadSettings', () => {
         expect(plugin.settings.urlPatterns).toEqual([
             { name: 'legacy', pattern: 'p', formatString: 'f', patternEnabled: true },
         ]);
+    });
+});
+
+describe('debounced saving', () => {
+    beforeEach(() => {
+        // The plugin uses window.setTimeout; vitest's node environment has no window
+        vi.stubGlobal('window', globalThis);
+        vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+        vi.unstubAllGlobals();
+    });
+
+    it('collapses rapid calls into a single save after the delay', async () => {
+        const plugin = createPlugin();
+        const saveData = vi.spyOn(plugin, 'saveData').mockResolvedValue(undefined);
+
+        plugin.debouncedSaveSettings();
+        plugin.debouncedSaveSettings();
+        plugin.debouncedSaveSettings();
+        expect(saveData).not.toHaveBeenCalled();
+
+        await vi.advanceTimersByTimeAsync(500);
+        expect(saveData).toHaveBeenCalledTimes(1);
+    });
+
+    it('flushes a pending save on unload instead of losing it', async () => {
+        const plugin = createPlugin();
+        const saveData = vi.spyOn(plugin, 'saveData').mockResolvedValue(undefined);
+
+        plugin.debouncedSaveSettings();
+        plugin.onunload();
+        expect(saveData).toHaveBeenCalledTimes(1);
+
+        // The pending timer was cleared: no second save fires later
+        await vi.advanceTimersByTimeAsync(1000);
+        expect(saveData).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not save on unload when nothing is pending', () => {
+        const plugin = createPlugin();
+        const saveData = vi.spyOn(plugin, 'saveData').mockResolvedValue(undefined);
+
+        plugin.onunload();
+        expect(saveData).not.toHaveBeenCalled();
+    });
+
+    it('does not save again on unload after the debounce already fired', async () => {
+        const plugin = createPlugin();
+        const saveData = vi.spyOn(plugin, 'saveData').mockResolvedValue(undefined);
+
+        plugin.debouncedSaveSettings();
+        await vi.advanceTimersByTimeAsync(500);
+        expect(saveData).toHaveBeenCalledTimes(1);
+
+        plugin.onunload();
+        expect(saveData).toHaveBeenCalledTimes(1);
     });
 });

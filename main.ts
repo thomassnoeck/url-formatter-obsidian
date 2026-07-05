@@ -22,6 +22,13 @@ export default class UrlFormatterPlugin extends Plugin {
 
     onunload() {
         console.log('URL Formatter Plugin unloaded.');
+
+        // Flush a pending debounced save so the last settings edits are not lost
+        if (this.saveDebounceTimer !== null) {
+            window.clearTimeout(this.saveDebounceTimer);
+            this.saveDebounceTimer = null;
+            this.saveSettings();
+        }
     }
 
     createPasteHandler(): Extension {
@@ -92,6 +99,7 @@ export default class UrlFormatterPlugin extends Plugin {
             window.clearTimeout(this.saveDebounceTimer);
         }
         this.saveDebounceTimer = window.setTimeout(() => {
+            this.saveDebounceTimer = null;
             this.saveSettings();
         }, delayMs);
     }
