@@ -2,7 +2,7 @@ import { Plugin } from 'obsidian';
 import { EditorView } from '@codemirror/view';
 import { Extension } from '@codemirror/state';
 import { UrlFormatterSettingTab } from './src/settings-tab';
-import { UrlFormatterSettings, DEFAULT_SETTINGS } from './src/types';
+import { UrlFormatterSettings, UrlPattern, DEFAULT_SETTINGS } from './src/types';
 
 /**
  * URL Formatter Plugin for Obsidian
@@ -129,25 +129,35 @@ export default class UrlFormatterPlugin extends Plugin {
 
             if (patternConfig.patternEnabled === false) continue;
 
-            if (!patternConfig.pattern || !patternConfig.formatString) continue;
-
-            try {
-                const regex = new RegExp(patternConfig.pattern);
-                const match = url.match(regex);
-
-                if (match) {
-                    // Replace $0, $1, $2, etc., with actual capture group values in a single pass
-                    const formattedDisplayText = patternConfig.formatString.replace(/\$(\d+)/g,
-                        (token, groupIndex) => Number(groupIndex) < match.length ? (match[Number(groupIndex)] ?? '') : token);
-
-                    return `[${formattedDisplayText}](${url})`;
-                }
-            } catch (e) {
-                console.error(`URL Formatter Plugin: Invalid regex pattern "${patternConfig.pattern}":`, e);
-            }
+            const formatted = this.formatUrlWithPattern(url, patternConfig);
+            if (formatted) return formatted;
         }
 
         // No pattern matches
         return null;
+    }
+
+    /**
+     * Applies a single pattern to a URL, ignoring the pattern's enabled state
+     * (also used by the settings tab to preview patterns while editing them)
+     * @returns Markdown link, or null if the pattern is incomplete, invalid, or does not match
+     */
+    formatUrlWithPattern(url: string, patternConfig: UrlPattern): string | null {
+        if (!patternConfig.pattern || !patternConfig.formatString) return null;
+
+        try {
+            const regex = new RegExp(patternConfig.pattern);
+            const match = url.match(regex);
+            if (!match) return null;
+
+            // Replace $0, $1, $2, etc., with actual capture group values in a single pass
+            const formattedDisplayText = patternConfig.formatString.replace(/\$(\d+)/g,
+                (token, groupIndex) => Number(groupIndex) < match.length ? (match[Number(groupIndex)] ?? '') : token);
+
+            return `[${formattedDisplayText}](${url})`;
+        } catch (e) {
+            console.error(`URL Formatter Plugin: Invalid regex pattern "${patternConfig.pattern}":`, e);
+            return null;
+        }
     }
 }

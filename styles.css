@@ -9,20 +9,50 @@
     background-color: var(--background-secondary);
 }
 
-/* Full width for text inputs within settings */
-.url-formatter-full-width-input {
+/* Stack the label above a full-width control (regex, format string, test url) */
+.url-formatter-stacked {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.url-formatter-stacked .setting-item-info {
+    margin-right: 0;
+    margin-bottom: var(--size-2-3);
+}
+
+.url-formatter-stacked .setting-item-control {
+    justify-content: flex-start;
     width: 100%;
 }
 
-/* Margin bottom for text inputs */
-.url-formatter-margin-bottom {
-    margin-bottom: var(--size-4-2);
+.url-formatter-stacked .setting-item-control input[type='text'] {
+    width: 100%;
+    font-family: var(--font-monospace);
 }
 
 /* Invalid regex visual feedback */
 .url-formatter-invalid-regex {
     border-color: var(--text-error) !important;
     background-color: var(--background-modifier-error);
+}
+
+/* Live preview of the formatted result for the test url */
+.url-formatter-preview {
+    padding: var(--size-4-2) var(--size-4-3);
+    border-radius: var(--radius-s);
+    background-color: var(--background-primary);
+    font-family: var(--font-monospace);
+    font-size: var(--font-ui-smaller);
+    color: var(--text-muted);
+    word-break: break-all;
+}
+
+.url-formatter-preview.is-match {
+    color: var(--color-green);
+}
+
+.url-formatter-preview.is-error {
+    color: var(--text-error);
 }
 
 /* Buy Me A Coffee button container styling */

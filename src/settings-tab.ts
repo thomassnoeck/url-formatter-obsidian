@@ -19,14 +19,20 @@ export class UrlFormatterSettingTab extends PluginSettingTab {
         containerEl.empty();
 
         new Setting(containerEl).setName("Custom url patterns").setHeading();
-        containerEl.createEl('p').innerHTML = 'Define custom url patterns to automatically format pasted links into clean Markdown.<br>Each pattern requires:';
+        containerEl.createEl('p', { text: 'Define custom url patterns to automatically format pasted links into clean Markdown. Each pattern requires:' });
 
         const ul = containerEl.createEl('ul');
-        ul.createEl('li', { text: 'A friendly name for identification.' })
-        ul.createEl('li', { text: 'A regular expression (regex) that matches the full url.' });
+        ul.createEl('li', { text: 'A friendly name for identification.' });
+        ul.createEl('li', { text: 'A regular expression (regex) that matches the url.' });
         const liWithCode = ul.createEl('li');
-        liWithCode.innerHTML = 'An output format string using <code>$0</code> for the full match, and <code>$1</code>, <code>$2</code>, etc., for capture groups. Remember to escape special characters (like . / ?).';
-        ul.createEl('li', { text: 'You can easily toggle each pattern on or off.' });
+        liWithCode.appendText('An output format string using ');
+        liWithCode.createEl('code', { text: '$0' });
+        liWithCode.appendText(' for the full match, and ');
+        liWithCode.createEl('code', { text: '$1' });
+        liWithCode.appendText(', ');
+        liWithCode.createEl('code', { text: '$2' });
+        liWithCode.appendText(', etc., for capture groups.');
+        ul.createEl('li', { text: 'Use the test field under each pattern to try it on a sample url and preview the result.' });
 
         // Render each existing URL pattern
         this.plugin.settings.urlPatterns.forEach((patternConfig, index) => {
@@ -69,10 +75,47 @@ export class UrlFormatterSettingTab extends PluginSettingTab {
      */
     private renderPatternItem(patternConfig: UrlPattern, index: number, containerEl: HTMLElement): void {
         const patternContainer = containerEl.createDiv('url-formatter-pattern-item');
+        const fallbackHeading = `Pattern ${index + 1}`;
 
-        // Pattern header with toggle
-        new Setting(patternContainer)
-            .setName(`Pattern ${index + 1}`).setHeading()
+        // Sample url the user is testing this pattern against (not persisted)
+        let testUrl = '';
+        let previewEl: HTMLElement;
+
+        const updatePreview = () => {
+            previewEl.removeClass('is-match', 'is-error');
+
+            if (!testUrl) {
+                previewEl.setText('Enter a test url above to see a live preview of the result.');
+                return;
+            }
+
+            try {
+                new RegExp(patternConfig.pattern);
+            } catch (e) {
+                previewEl.addClass('is-error');
+                previewEl.setText(`Invalid regular expression: ${e instanceof Error ? e.message : String(e)}`);
+                return;
+            }
+
+            if (!patternConfig.pattern || !patternConfig.formatString) {
+                previewEl.setText('Fill in the regular expression and output format string to preview.');
+                return;
+            }
+
+            const result = this.plugin.formatUrlWithPattern(testUrl, patternConfig);
+            if (result) {
+                previewEl.addClass('is-match');
+                previewEl.setText(`✓ ${result}`);
+            } else {
+                previewEl.addClass('is-error');
+                previewEl.setText('✗ This url does not match the regular expression.');
+            }
+        };
+
+        // Pattern header with toggle; shows the pattern's name and follows edits live
+        const headingSetting = new Setting(patternContainer)
+            .setName(patternConfig.name || fallbackHeading)
+            .setHeading()
             .addToggle(toggle => toggle
                 .setValue(patternConfig.patternEnabled)
                 .onChange(async (value) => {
@@ -89,47 +132,64 @@ export class UrlFormatterSettingTab extends PluginSettingTab {
                 .setValue(patternConfig.name)
                 .onChange((value) => {
                     patternConfig.name = value;
+                    headingSetting.setName(value || fallbackHeading);
                     this.plugin.debouncedSaveSettings();
                 }));
 
         // Regular expression with validation
-        new Setting(patternContainer)
+        const regexSetting = new Setting(patternContainer)
             .setName('Regular expression')
-            .setDesc('The regex to match the url. **Use `\\/` to escape literal forward slashes `/` and `\\.` to escape literal dots `.`')
-            .addText(text => {
-                text.setPlaceholder('e.g., "https:\\/\\/([A-Za-z0-9-]+)\\.example\\.com\\/([A-Z0-9-]+)"')
-                    .setValue(patternConfig.pattern)
-                    .onChange((value) => {
-                        patternConfig.pattern = value;
+            .setDesc('The regex to match the url. Escape literal dots and slashes with a backslash: \\. and \\/');
+        regexSetting.settingEl.addClass('url-formatter-stacked');
+        regexSetting.addText(text => {
+            text.setPlaceholder('e.g., https:\\/\\/([A-Za-z0-9-]+)\\.example\\.com\\/([A-Z0-9-]+)')
+                .setValue(patternConfig.pattern)
+                .onChange((value) => {
+                    patternConfig.pattern = value;
 
-                        // Validate regex and provide visual feedback
-                        try {
-                            new RegExp(value);
-                            text.inputEl.removeClass('url-formatter-invalid-regex');
-                        } catch (e) {
-                            text.inputEl.addClass('url-formatter-invalid-regex');
-                        }
+                    // Validate regex and provide visual feedback
+                    try {
+                        new RegExp(value);
+                        text.inputEl.removeClass('url-formatter-invalid-regex');
+                    } catch (e) {
+                        text.inputEl.addClass('url-formatter-invalid-regex');
+                    }
 
-                        this.plugin.debouncedSaveSettings();
-                    });
-                text.inputEl.addClass('url-formatter-full-width-input');
-                text.inputEl.addClass('url-formatter-margin-bottom');
-            });
+                    updatePreview();
+                    this.plugin.debouncedSaveSettings();
+                });
+        });
 
         // Output format string
-        new Setting(patternContainer)
+        const formatSetting = new Setting(patternContainer)
             .setName('Output format string')
-            .setDesc('Use $0 for the full url match, $1, $2, etc., for regex capture groups. e.g., "Blog: $1 - $2!"')
-            .addText(text => {
-                text.setPlaceholder('e.g., "$2 ($1)"')
-                    .setValue(patternConfig.formatString)
-                    .onChange((value) => {
-                        patternConfig.formatString = value;
-                        this.plugin.debouncedSaveSettings();
-                    });
-                text.inputEl.addClass('url-formatter-full-width-input');
-                text.inputEl.addClass('url-formatter-margin-bottom');
-            });
+            .setDesc('Use $0 for the full url match, $1, $2, etc., for regex capture groups. e.g., "Blog: $1 - $2!"');
+        formatSetting.settingEl.addClass('url-formatter-stacked');
+        formatSetting.addText(text => {
+            text.setPlaceholder('e.g., $2 ($1)')
+                .setValue(patternConfig.formatString)
+                .onChange((value) => {
+                    patternConfig.formatString = value;
+                    updatePreview();
+                    this.plugin.debouncedSaveSettings();
+                });
+        });
+
+        // Live tester: paste a sample url and preview the formatted result
+        const testSetting = new Setting(patternContainer)
+            .setName('Test with a sample url')
+            .setDesc('Paste an example url to preview what this pattern produces. (not saved)');
+        testSetting.settingEl.addClass('url-formatter-stacked');
+        testSetting.addText(text => {
+            text.setPlaceholder('e.g., https://acme.example.com/ABC-123')
+                .onChange((value) => {
+                    testUrl = value.trim();
+                    updatePreview();
+                });
+        });
+
+        previewEl = patternContainer.createDiv('url-formatter-preview');
+        updatePreview();
 
         // Remove button - fixed closure bug by using filter instead of splice
         new Setting(patternContainer)

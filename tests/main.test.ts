@@ -96,6 +96,20 @@ describe('formatUrl', () => {
     });
 });
 
+describe('formatUrlWithPattern', () => {
+    it('applies a single pattern regardless of its enabled state (used by the settings preview)', () => {
+        const plugin = createPlugin();
+        expect(plugin.formatUrlWithPattern('https://acme.example.com/ABC-123', { ...TICKET_PATTERN, patternEnabled: false }))
+            .toBe('[ABC-123 (acme)](https://acme.example.com/ABC-123)');
+    });
+
+    it('returns null for incomplete or non-matching patterns', () => {
+        const plugin = createPlugin();
+        expect(plugin.formatUrlWithPattern('https://acme.example.com/ABC-123', BLANK_PATTERN)).toBeNull();
+        expect(plugin.formatUrlWithPattern('https://unrelated.org/x', TICKET_PATTERN)).toBeNull();
+    });
+});
+
 describe('isUrl', () => {
     it('accepts an absolute http(s) URL', () => {
         expect(createPlugin().isUrl('https://example.com/path?q=1')).toBe(true);
