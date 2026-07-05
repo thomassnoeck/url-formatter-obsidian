@@ -1,5 +1,17 @@
+# Dependencies
 node_modules/
-*.d.ts
+
+# Build output
 main.js
-package-lock.json
+*.map
+
+# Obsidian plugin data (created when developing inside a vault)
 data.json
+
+# OS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+*.iml

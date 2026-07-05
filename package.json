@@ -3,28 +3,33 @@
   "version": "1.1.1",
   "description": "An Obsidian plugin to format pasted URLs into clean Markdown links.",
   "main": "main.js",
-  "type": "module",
+  "private": true,
   "scripts": {
     "dev": "rollup -c --watch",
     "build": "rollup -c --environment BUILD:production"
   },
-  "keywords": [],
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "url",
+    "markdown"
+  ],
   "author": "Thomas Snoeck",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/thomassnoeck/url-formatter-obsidian"
+    "url": "git+https://github.com/thomassnoeck/url-formatter-obsidian.git"
   },
   "devDependencies": {
+    "@codemirror/state": "6.5.0",
+    "@codemirror/view": "6.38.6",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/node": "^20.14.9",
-    "obsidian": "^1.7.2",
+    "obsidian": "1.13.1",
     "rollup": "^4.18.0",
     "tslib": "^2.6.3",
-    "typescript": "^5.5.3",
-    "@codemirror/view": "^6.0.0",
-    "@codemirror/state": "^6.0.0"
+    "typescript": "^5.5.3"
   }
 }
